@@ -1,0 +1,55 @@
+version: "3.6"
+
+services:
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+
+  db: 
+    image:  postgres
+    volumes:
+      -  postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    container_name: postgres_db
+    networks:
+      - djangonetwork
+
+  app:
+    build: .
+    volumes:
+      - .:/django
+    ports:
+      - 8000:8000
+    image: app:django
+    container_name: django_app
+    command: python manage.py runserver 0.0.0.0:8000
+    depends_on:
+      - db
+    networks:
+      - djangonetwork
+
+  celery:
+    restart: always
+    build: 
+      context: .
+    command: celery -A core worker -l DEBUG
+    volumes:
+      - .:/django
+    container_name: celery
+    depends_on:
+      - db
+      - redis
+      - app
+
+networks:
+    djangonetwork:
+          
+volumes:
+  postgres_data:
+
+
+  
