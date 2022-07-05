@@ -1,7 +1,7 @@
 from rest_framework import filters
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, generics
 from rest_framework.permissions import IsAuthenticated
 from .serializers import (
     ProductSerializer, CategorySerializer
@@ -9,19 +9,14 @@ from .serializers import (
 from inventory.models.product import Product as ProductModel
 from inventory.models.category import Category as CategoryModel
 
-class CategoryListAPIView(APIView):
+class CategoryListAPIView(generics.ListCreateAPIView):
     """ Return list of all categories"""
-    def get(self, request):
-        try:
-            search_fields = ['name']
-            filter_backends = (filters.SearchFilter,)
-            queryset = CategoryModel.objects.all()
-            serializer = CategorySerializer(queryset, many=True)
-            return Response(serializer.data, status = status.HTTP_200_OK)
-        except:
-            return Response({'status': 'Internal Server Error'},
-                            status=status.HTTP_500_INTERNAL_SERVER_ERROR
-                            )
+    search_fields = ['name']
+    filter_backends = (filters.SearchFilter,)
+    queryset = CategoryModel.objects.all()
+    serializer_class = CategorySerializer
+    lookup_field = 'pk'
+
 
 
 class ProductsAPIView(APIView):

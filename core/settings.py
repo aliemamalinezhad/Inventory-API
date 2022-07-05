@@ -37,13 +37,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'rest_framework',
     'drf_yasg',
 
 
     'inventory',
     'promotion',
 
-    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -131,7 +132,12 @@ CELERY_RESULT_BACKEND = "redis://redis:6379"
 
 # REST FRAMEWORK
 REST_FRAMEWORK = {
+
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ]
+    ],
+    'DEFAULT_PAGINATION_CLASS':
+    'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 100,
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'  
 }
