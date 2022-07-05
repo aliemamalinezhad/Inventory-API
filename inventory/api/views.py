@@ -12,20 +12,30 @@ from inventory.models.category import Category as CategoryModel
 class CategoryListAPIView(APIView):
     """ Return list of all categories"""
     def get(self, request):
-        search_fields = ['name']
-        filter_backends = (filters.SearchFilter,)
-        queryset = CategoryModel.objects.all()
-        serializer = CategorySerializer(queryset, many=True)
-        return Response(serializer.data)
+        try:
+            search_fields = ['name']
+            filter_backends = (filters.SearchFilter,)
+            queryset = CategoryModel.objects.all()
+            serializer = CategorySerializer(queryset, many=True)
+            return Response(serializer.data, status = status.HTTP_200_OK)
+        except:
+            return Response({'status': 'Internal Server Error'},
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                            )
 
 
 class ProductsAPIView(APIView):
     def get(self, request, *args, **kwargs):
-        search_fields = ['name']
-        filter_backends = (filters.SearchFilter,)
-        products = ProductModel.objects.all()
-        srz_data = ProductSerializer(instance=products, many=True).data
-        return Response(srz_data, status = status.HTTP_200_OK)
+        try:
+            search_fields = ['name']
+            filter_backends = (filters.SearchFilter,)
+            products = ProductModel.objects.all()
+            srz_data = ProductSerializer(instance=products, many=True).data
+            return Response(srz_data, status = status.HTTP_200_OK)
+        except:
+            return Response({'status': 'Internal Server Error'},
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                            )
 
 
 class CreateProductAPIView(APIView):
@@ -52,6 +62,11 @@ class UpdateProductAPIView(APIView):
 
 class DeletePeoductAPIView(APIView):
     def delete(self, request, pk):
-        product = ProductModel.objects.get(pk=pk)
-        product.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        try:
+            product = ProductModel.objects.get(pk=pk)
+            product.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except:
+            return Response({'status': 'Internal Server Error'},
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                            )
